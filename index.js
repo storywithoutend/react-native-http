@@ -17,7 +17,8 @@ http.request = function (params, cb) {
     }
     if (!params) params = {}
     if (!params.host && !params.port) {
-        params.port = defaults.port
+        if (params.protocol === 'https:') params.port = 443
+        else params.port = defaults.port
     }
     if (!params.host && params.hostname) {
         params.host = params.hostname
