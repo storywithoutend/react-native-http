@@ -7,7 +7,7 @@ var EventEmitter = require('events').EventEmitter
 var Request = require('./lib/request')
 var url = require('url')
 var defaults = {
-    port: 80,
+    port: (protocol) => protocol == 'https:' ? 443 : 80,
     protocol: 'http:'
 }
 
@@ -17,8 +17,7 @@ http.request = function (params, cb) {
     }
     if (!params) params = {}
     if (!params.host && !params.port) {
-        if (params.protocol === 'https:') params.port = 443
-        else params.port = defaults.port
+         params.port = defaults.port(params.protocol)
     }
     if (!params.host && params.hostname) {
         params.host = params.hostname
@@ -42,7 +41,7 @@ http.request = function (params, cb) {
         }
         params.host = params.host.split(':')[0]
     }
-    if (!params.port) params.port = params.protocol == 'https:' ? 443 : 80
+    if (!params.port) params.port = defaults.port(params.protocol)
 
     var req = new Request(new XMLHttpRequest(), params)
     if (cb) req.on('response', cb)
